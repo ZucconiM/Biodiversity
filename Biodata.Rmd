@@ -1,0 +1,74 @@
+---
+title: "Endangered species abundance"
+author: "Mauro Zucconi"
+date: "14/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, message= F, warning = F)
+```
+
+```{r, Data}
+library(tidyverse)
+library(lubridate)
+library(Rmisc) 
+library(psych)
+library(car)
+library(dplyr)
+######## Base de datos especies ########
+species2 <-read_csv("~/Desktop/Diversidad/Diversidad/species.csv")
+colnames(species2) <- c("SpeciesID","ParkName", "Category", "Order", "Family", "SName", 
+                        "CommonNames", "RecordStatus", "Occurrence", "Nativeness", "Abundance", 
+                        "Seasonality", "ConservationStatus", "X14")
+```
+
+The aim of this document is to explorate about the abundance of endangered species from three of the most diverse orders in vertebrata (Anfibia, Reptilia and Mamifera) inside some of the biggest Natural Parks in USA.
+
+```{r}
+aa <- species2 %>% count(c("ParkName", "SName", "Category", "ConservationStatus")) %>% 
+filter(!is.na("Abundance")) %>% filter(!is.na("Occurrence")) %>% filter(!is.na("ConservationStatus")) %>% filter(ConservationStatus == "Endangered") %>% filter(Category == "Mammal" | Category == "Bird"| Category == "Reptile")
+aa1<- aa %>% group_by(ParkName, Category, ConservationStatus) %>% dplyr::summarise(n = n_distinct(SName))
+aa2<- aa %>% group_by(ParkName,ConservationStatus) %>% dplyr::summarise(n = n_distinct(SName))
+
+######## Base de datos parques  ########
+parks <-read.csv("~/Desktop/Diversidad/Diversidad/parks.csv")
+colnames(parks) <- c("ParkCode","ParkName", "State", "Acres", "Latitude", "Longitude")
+
+######## Base de datos combinadas FINALES #######
+### Matriz aa1
+tot <- full_join(parks,aa1,by="ParkName",copy=FALSE)
+tot1$ParkName <- as.factor(tot1$ParkName)
+tot1 <-tot %>% filter(!is.na(ConservationStatus)) %>% filter(!is.na(Category))
+str(tot1)
+
+#### Matr??z aa2
+tot2 <-full_join(parks,aa2,by="ParkName",copy=FALSE) 
+
+ggplot(tot1, aes(x= Acres, y= n)) + 
+  geom_point() + geom_smooth(method= "loess")+
+ theme_bw()+
+   theme(legend.position="none",
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        strip.background=element_blank())+
+  ylab("")+ xlab("")+
+  theme(axis.line=element_line(colour = "black"),
+        axis.text.x = element_text(angle=60, hjust=1),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(), 
+        panel.border=element_blank(),
+        panel.background=element_blank(),
+        legend.key=element_blank(), 
+        legend.title=element_text(size=18, face= "bold"), 
+        legend.text=element_text(size=18,face= "bold"),
+        axis.title=element_text(size=15,face= "bold"),
+        axis.text=element_text(size=15,face= "bold"))
+
+
+
+
+
+
+```
+

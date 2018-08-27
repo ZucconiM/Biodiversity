@@ -81,11 +81,6 @@ p4 <- ggplot(tat1,aes(x = ParkName, y = n)) +
                               "Theodore Roosevelt NP", "Voyageurs NP", "Wind Cave NP", "Wrangell-St Elias NP", "Yellowstone NP", "Yosemite NP", "Zion NP"))
 
   
-
-
-
-
-
 # Parques con mam??feros, aves y reptiles categor??as en estado de peligro
 p3<-ggplot(tot1,aes(x = ParkName, y = n)) + 
   geom_col(aes(fill = Category))+
@@ -203,4 +198,5 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 multiplot(p2, p1)
 
 multiplot(p3, p4)
+
 
