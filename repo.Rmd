@@ -26,6 +26,7 @@ library(extrafontdb)
 library(dismo)
 library(knitr)
 library(wesanderson)
+library(ggmap)
 ######## Base de datos especies, cambio de nombre de columnas ########
 parks <-read.csv("~/Desktop/Diversidad/Diversidad/parks.csv")
 colnames(parks) <- c("ParkCode","ParkName", "State", "Acres", "Latitude", "Longitude")
@@ -48,6 +49,7 @@ tat <- full_join(parks,aaa1,by="ParkName",copy=FALSE)
 tat1 <-tat %>% filter(!is.na(ConservationStatus)) %>% filter(!is.na(Category))
 wer <- tat1 %>% group_by(ParkName) %>% summarise_all(funs(mean, sd)) %>% filter(!is.na(n_sd)) %>% dplyr::select(ParkName, n_mean, n_sd)
 colnames(wer) <- c("Park Name", "Mean abundance", "Standard-Deviation abundance")
+map <- get_map(location = "Estados Unidos", zoom= 4, scale= "auto", maptype = "satellite") 
 
 ```
 ```{r, echo=F, warning=F, message=F, cap=c("Mean number of categoryes classified as endangered in each Natural Park")}
@@ -57,7 +59,7 @@ kable(totabla, caption = "Table 1. Mean number of categoryes with species classi
 ```
 
 
-```{r, echo=F, warning=F, message=F, fig.width = 15, fig.asp = .62, fig.cap=c("Fig.1: Taxa categories with at least one species categorized as endangered in each Park", "Fig.2: Chordata taxa categories with at least one species categorized as endangered in each Park", "Fig.3:Graphic relationship between the latitude and the longitud with the chordata taxa", "Fig.4: Graphic relationship between the latitude and the longitud with the area of the park (in acres)") }
+```{r, echo=F, warning=F, message=F, fig.width = 15, fig.asp = .62, fig.cap=c("Fig.1: Taxa categories with at least one species categorized as endangered in each Park", "Fig.2: Chordata taxa categories with at least one species categorized as endangered in each Park", "Fig.3:Graphic relationship between the latitude and the longitud with the chordata taxa", "Fig.4: Graphic relationship between the latitude and the longitud with the area of the park (in acres)", "Fig.5: Distribution of endangered categories along United states. Point size represents endangered taxa abundance")}
 
 
 ggplot(tat1,aes(x = ParkName, y = n)) + 
@@ -79,8 +81,7 @@ ggplot(tat1,aes(x = ParkName, y = n)) +
         legend.text=element_text(size=15),
         axis.title=element_text(size=18, face= "bold",colour="black"),
         axis.text=element_text(size=15))+
-  scale_x_discrete(labels = c("Acadia NP","Arches NP","Badlands NP", "Big Bend NP","Biscayne NP", "Black Canyon NP", "Bryce Canyon NP","Canyonlands NP", "Capitol Reef NP",  "Carlsbad Caverns NP","Channel Islands NP", "Congaree NP", "Crater Lake NP", "Cuyahoga Valley NP", "Death Valley NP","Dry Tortugas NP ", "Everglades NP", "Glacier Bay NP","Grand Canyon NP", "Grand Teton NP", "Great Basin NP", "Great Smoky Mountains NP", "Guadalupe Mountains NP", 
-"Haleakala NP", "Hawaii Volcanoes NP", "Hot Springs NP", "Isle Royale NP", "Joshua Tree NP", "Katmai NP", "Kenai Fjords NP", "Lake Clark NP", "Lassen Volcanic NP", "Mammoth Cave NP", "Mesa Verde NP", "Mount Rainier NP",  "North Cascades NP", "Olympic NP", "Petrified Forest NP", "Pinnacles NP","Redwood NP", "Rocky Mountain NP", "Saguaro NP", "Sequoia-Kings Canyon NPs", "Shenandoah NP","Theodore Roosevelt NP", "Voyageurs NP", "Wind Cave NP", "Wrangell-St Elias NP", "Yellowstone NP", "Yosemite NP", "Zion NP"))
+  scale_x_discrete(labels = c("Acadia NP","Arches NP","Big Bend NP","Badlands NP", "Big Bend NP","Biscayne NP", "Black Canyon NP", "Bryce Canyon NP","Canyonlands NP", "Capitol Reef NP","Capitol Reef NP" , "Carlsbad Caverns NP","Channel Islands NP", "Congaree NP", "Crater Lake NP", "Cuyahoga Valley NP", "Death Valley NP","Dry Tortugas NP ", "Everglades NP", "Glacier Bay NP","Grand Canyon NP", "Grand Teton NP", "Great Basin NP", "Great Smoky Mountains NP", "Guadalupe Mountains NP","Haleakala NP", "Hawaii Volcanoes NP", "Hot Springs NP", "Isle Royale NP", "Joshua Tree NP", "Katmai NP", "Kenai Fjords NP", "Lake Clark NP", "Lassen Volcanic NP", "Lassen Volcanic NP", "Mammoth Cave NP", "Mesa Verde NP", "Mount Rainier NP",  "North Cascades NP", "Olympic NP", "Petrified Forest NP", "Pinnacles NP", "Pinnacles NP", "Redwood NP", "Rocky Mountain NP", "Saguaro NP", "Sequoia-Kings Canyon NPs", "Saguaro NP", "Shenandoah NP","Theodore Roosevelt NP", "Voyageurs NP", "Wind Cave NP", "Wrangell-St Elias NP", "Yellowstone NP", "Yosemite NP", "Zion NP"))
 
 
 
@@ -130,13 +131,29 @@ scale_color_manual(values = c(rep(c("lightgreen", "lightgray", "steelblue", "bla
         axis.title=element_text(size=18, face= "bold",colour="black"),
         axis.text=element_text(size=15))
 
-
-
-
 ggplot(tot1,aes(x = Longitude, y = Latitude))+ 
   geom_point(aes(size = Acres))+
   scale_color_manual(values=wes_palette(n=4, name="GrandBudapest1")) +
   theme_bw()+
+  theme(panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        strip.background=element_blank())+
+  ylab("Latitud")+ xlab("Longitud")+
+  theme(text=element_text(family="Times New Roman"), 
+        axis.line=element_line(colour = "black"),
+        axis.text.x = element_text(angle=0, hjust=1),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(), 
+        panel.border=element_blank(),
+        panel.background=element_blank(), 
+        legend.title=element_text(size=18, face= "bold",colour="black"), 
+        legend.text=element_text(size=15),
+        axis.title=element_text(size=18, face= "bold",colour="black"),
+        axis.text=element_text(size=15))
+
+  ggmap(map) + 
+  geom_point(data= tot1, aes(x= Longitude, y= Latitude, size= n, color= Category))+
+  scale_color_manual(values = c(rep(c("lightgreen", "lightgray", "steelblue", "black", "skyblue","#E69F00","darkgreen"))))+
   theme(panel.grid.major=element_blank(),
         panel.grid.minor=element_blank(),
         strip.background=element_blank())+

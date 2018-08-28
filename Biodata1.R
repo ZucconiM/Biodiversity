@@ -10,6 +10,7 @@ library(extrafontdb)
 library(dismo)
 library(knitr)
 library(wesanderson)
+library(ggmap)
 ######## Base de datos especies, cambio de nombre de columnas ########
 species2 <-read_csv("~/Desktop/Diversidad/Diversidad/species.csv")
 colnames(species2) <- c("SpeciesID","ParkName", "Category", "Order", "Family", "SName", 
@@ -195,8 +196,24 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 ########################################################
 
-multiplot(p2, p1)
-
-multiplot(p3, p4)
+map <- get_map(location = "Estados Unidos", zoom= 4, scale= "auto", maptype = "satellite") 
+Mapa<- ggmap(map) + 
+  geom_point(data= tot1, aes(x= Longitude, y= Latitude, size= n, color= Category))+
+  scale_color_manual(values = c(rep(c("lightgreen", "lightgray", "steelblue", "black", "skyblue","#E69F00","darkgreen"))))+
+  theme(panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        strip.background=element_blank())+
+  ylab("Latitud")+ xlab("Longitud")+
+  theme(text=element_text(family="Times New Roman"), 
+        axis.line=element_line(colour = "black"),
+        axis.text.x = element_text(angle=0, hjust=1),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(), 
+        panel.border=element_blank(),
+        panel.background=element_blank(), 
+        legend.title=element_text(size=13, face= "bold",colour="black"), 
+        legend.text=element_text(size=11),
+        axis.title=element_text(size=13, face= "bold",colour="black"),
+        axis.text=element_text(size=11))
 
 
